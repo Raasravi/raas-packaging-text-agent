@@ -66,6 +66,7 @@
     padding: 8px;
     margin-top: 8px;
     font-size: 14px;
+    box-sizing: border-box;
   }
 
   .hidden {
@@ -126,6 +127,8 @@ const questions = {
 
 function start(l) {
   lang = l;
+  step = 0;
+  answers = [];
   document.getElementById("app").classList.remove("hidden");
   render();
 }
@@ -134,13 +137,17 @@ function render() {
   const q = questions[lang][step];
   let html = `<div class="question"><b>${q.q}</b><br/>`;
 
+  // ONLY CHANGE: first question (text) gets an Enter button to proceed
   if (q.type === "text") {
-    html += `<input type="text" onblur="next(this.value)" />`;
+    html += `
+      <input type="text" id="productInput" />
+      <button class="btn" style="margin-top:12px;" onclick="goNextFromText()">Enter</button>
+    `;
   }
 
   if (q.options) {
     q.options.forEach(o => {
-      html += `<div class="option"><input type="radio" name="opt" onclick="next('${o}')"> ${o}</div>`;
+      html += `<div class="option"><input type="radio" name="opt" onclick="next('${escapeForJs(o)}')"> ${o}</div>`;
     });
   }
 
@@ -150,6 +157,17 @@ function render() {
 
   html += `</div>`;
   document.getElementById("app").innerHTML = html;
+}
+
+function goNextFromText() {
+  const input = document.getElementById("productInput");
+  const value = (input ? input.value.trim() : "");
+  if (value.length === 0) {
+    // Keep it simple: do not advance if empty
+    alert(lang === "hi" ? "कृपया उत्पाद का नाम लिखें।" : "Please enter the product name.");
+    return;
+  }
+  next(value);
 }
 
 function next(val) {
@@ -166,7 +184,12 @@ function next(val) {
 }
 
 function submit() {
-  alert("Feedback submitted. Thank you.");
+  alert(lang === "hi" ? "फीडबैक सबमिट हो गया। धन्यवाद।" : "Feedback submitted. Thank you.");
+}
+
+// Utility: safely place option text inside onclick='...'
+function escapeForJs(s) {
+  return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
 </script>
 
