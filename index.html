@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RAAS Packaging Feedback</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 16px;
+    background: #ffffff;
+    max-width: 480px;
+    margin: auto;
+  }
+
+  .logo {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .logo img {
+    width: 140px;
+  }
+
+  h1 {
+    text-align: center;
+    color: #1f4fd8;
+    font-size: 24px;
+    margin: 16px 0 4px;
+  }
+
+  p {
+    text-align: center;
+    font-size: 14px;
+    margin: 6px 0;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    margin-top: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #1f4fd8;
+    color: #fff;
+  }
+
+  .btn.secondary {
+    background: #e6e6e6;
+    color: #000;
+  }
+
+  .question {
+    margin-top: 20px;
+  }
+
+  .option {
+    margin: 10px 0;
+  }
+
+  textarea, input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="logo">
+  <img src="https://raas-voice-demo.vercel.app/logo.png" alt="RAAS Logo">
+</div>
+
+<h1>Check the New Revolution in Packaging</h1>
+<p>Tomorrow’s packaging with RAAS</p>
+
+<p><b>How it works</b></p>
+<p>• Press Start and select option</p>
+<p>• Press End to stop anytime</p>
+
+<button class="btn" onclick="start('en')">English</button>
+<button class="btn" onclick="start('hi')">हिन्दी</button>
+
+<div id="app" class="hidden"></div>
+
+<script>
+let lang = "en";
+let step = 0;
+let answers = [];
+
+const questions = {
+  en: [
+    { q: "What product did you buy?", type: "text" },
+    { q: "How was the package when you bought it?", options: ["Condition was good", "Condition was not good"], text: true },
+    { q: "How easy was it to access and open the package?", options: ["Easy", "Difficult"], text: true },
+    { q: "How was the freshness / quality of the product after opening?", options: [
+        "Product quality was good",
+        "Product quality was okay but broken / chipped",
+        "Product quality had deteriorated"
+      ], text: true },
+    { q: "Did you buy this product for the first time?", options: ["Yes", "No"] },
+    { q: "Will you buy it again?", options: ["Yes", "No"] }
+  ],
+  hi: [
+    { q: "आपने कौन सा उत्पाद खरीदा?", type: "text" },
+    { q: "खरीदते समय पैकेज की स्थिति कैसी थी?", options: ["स्थिति अच्छी थी", "स्थिति अच्छी नहीं थी"], text: true },
+    { q: "पैकेज खोलना कितना आसान था?", options: ["आसान", "कठिन"], text: true },
+    { q: "खोलने के बाद उत्पाद की गुणवत्ता कैसी थी?", options: [
+        "उत्पाद की गुणवत्ता अच्छी थी",
+        "उत्पाद ठीक था लेकिन टूटा / चिपका हुआ था",
+        "उत्पाद खराब हो गया था"
+      ], text: true },
+    { q: "क्या आपने यह उत्पाद पहली बार खरीदा?", options: ["हाँ", "नहीं"] },
+    { q: "क्या आप इसे फिर से खरीदेंगे?", options: ["हाँ", "नहीं"] }
+  ]
+};
+
+function start(l) {
+  lang = l;
+  document.getElementById("app").classList.remove("hidden");
+  render();
+}
+
+function render() {
+  const q = questions[lang][step];
+  let html = `<div class="question"><b>${q.q}</b><br/>`;
+
+  if (q.type === "text") {
+    html += `<input type="text" onblur="next(this.value)" />`;
+  }
+
+  if (q.options) {
+    q.options.forEach(o => {
+      html += `<div class="option"><input type="radio" name="opt" onclick="next('${o}')"> ${o}</div>`;
+    });
+  }
+
+  if (q.text) {
+    html += `<textarea placeholder="Any other feedback"></textarea>`;
+  }
+
+  html += `</div>`;
+  document.getElementById("app").innerHTML = html;
+}
+
+function next(val) {
+  answers.push(val);
+  step++;
+  if (step < questions[lang].length) {
+    render();
+  } else {
+    document.getElementById("app").innerHTML = `
+      <p><b>Thank you. Have a nice day.</b></p>
+      <button class="btn" onclick="submit()">Submit</button>
+    `;
+  }
+}
+
+function submit() {
+  alert("Feedback submitted. Thank you.");
+}
+</script>
+
+</body>
+</html>
